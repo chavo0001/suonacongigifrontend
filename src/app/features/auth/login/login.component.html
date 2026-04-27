@@ -1,0 +1,49 @@
+<div class="auth-wrapper fade-in">
+  <div class="card auth-card">
+    
+    <div class="auth-header">
+      <span class="logo-icon">🎸</span>
+      <h2>Bentornato</h2>
+      <p class="text-muted">Accedi al portale di Gigi</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" 
+               type="text" 
+               formControlName="username"
+               placeholder="Inserisci il tuo username"
+               trimValue
+               [class.invalid]="isFieldInvalid('username')" />
+        
+        @if (isFieldInvalid('username')) {
+          <span class="hint-error">Username obbligatorio</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" 
+               type="password" 
+               formControlName="password"
+               placeholder="••••••••"
+               [class.invalid]="isFieldInvalid('password')" />
+        
+        @if (isFieldInvalid('password')) {
+          <span class="hint-error">Password obbligatoria</span>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="loading.isLoading()">
+        {{ loading.isLoading() ? 'Verifica credenziali...' : 'Accedi' }}
+      </button>
+
+    </form>
+
+    <p class="switch-link">
+      Non hai un account? <a (click)="ui.openRegister()">Registrati</a>
+    </p>
+  </div>
+</div>

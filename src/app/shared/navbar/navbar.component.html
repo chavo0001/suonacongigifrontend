@@ -1,0 +1,35 @@
+<nav class="navbar">
+  <div class="navbar-brand">
+    <span class="logo-icon">🎸</span>
+    <span class="brand-name">Suona con Gigi</span>
+  </div>
+
+  @if (auth.isLoggedIn()) {
+    <div class="navbar-links">
+      <a routerLink="/events" routerLinkActive="active" class="nav-link">Eventi</a>
+      <a routerLink="/forum"  routerLinkActive="active" class="nav-link">Forum</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-link">Profilo</a>
+      
+      @if (auth.isAdmin()) {
+        <a routerLink="/admin" routerLinkActive="active" class="nav-link">Dashboard</a>
+      }
+    </div>
+  }
+
+  <div class="navbar-user">
+    @if (auth.isLoggedIn()) {
+      <span class="username">
+        {{ auth.currentUser()?.username }}
+        <span class="badge-nav" [class.admin]="auth.isAdmin()">
+          {{ auth.isAdmin() ? 'ADMIN' : 'USER' }}
+        </span>
+      </span>
+      <button class="btn-logout" (click)="auth.logout()">Esci</button>
+    } @else {
+      <div class="navbar-links">
+        <a routerLink="/login" class="nav-link">Accedi</a>
+        <a routerLink="/register" class="btn btn-primary btn-sm">Registrati</a>
+      </div>
+    }
+  </div>
+</nav>

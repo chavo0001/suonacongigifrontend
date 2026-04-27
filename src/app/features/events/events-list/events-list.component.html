@@ -1,0 +1,105 @@
+<div class="container fade-in">
+  
+  <div class="page-header">
+    <div class="header-text">
+      <h1>🎵 Il Palco degli Eventi</h1>
+      <p class="text-muted">La tua scaletta personale per i prossimi live</p>
+    </div>
+    
+    @if (auth.isAdmin()) {
+      <a routerLink="/admin/events/new" class="btn btn-primary">
+        <span>+</span> Nuovo Evento
+      </a>
+    }
+  </div>
+
+  @if (events().length > 0) {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Evento</th>
+            <th>Data e Ora</th>
+            <th>Location</th>
+            <th>Disponibilità</th>
+            <th>Stato</th>
+            <th class="text-right">Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (event of events(); track event.id) {
+            <tr [class.row-highlight]="event.registeredByCurrentUser">
+              <td class="col-main">
+                <div class="item-title">{{ event.title }}</div>
+                <div class="item-subtext">{{ event.description | slice:0:50 }}...</div>
+              </td>
+              <td>{{ event.eventDate | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ event.location }}</td>
+              
+              <td>
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span [class.text-error]="event.seatsAvailable <= 5">
+                      {{ event.seatsAvailable }} posti liberi
+                    </span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-bar" 
+                         [style.width.%]="(event.seatsBooked / event.maxSeats) * 100"
+                         [class.bg-error]="event.seatsAvailable === 0">
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                @if (event.registeredByCurrentUser) {
+                  <span class="badge badge-success">✓ ISCRITTO</span>
+                } @else if (event.seatsAvailable === 0) {
+                  <span class="badge badge-error">SOLD OUT</span>
+                }
+              </td>
+
+              <td class="text-right">
+                <div class="action-group">
+                  @if (!auth.isAdmin()) {
+                    <button
+                      (click)="toggleRegistration(event)"
+                      [disabled]="actionLoading()[event.id] || (!event.registeredByCurrentUser && event.seatsAvailable === 0)"
+                      [class]="event.registeredByCurrentUser ? 'btn btn-primary btn-sm' : 'btn btn-primary btn-sm'">
+                      
+                      @if (actionLoading()[event.id]) {
+                        <span class="loader-small"></span>
+                      } @else {
+                        {{ event.registeredByCurrentUser ? 'Annulla Iscrizione' : 'Partecipa' }}
+                      }
+                    </button>
+                  }
+
+                  @if (auth.isAdmin()) {
+                  <div class="action-group">
+                    <a [routerLink]="['/admin/events', event.id, 'edit']" 
+                      class="btn-action btn-edit" title="Modifica">
+                      <span>✏️</span> 
+                    </a>
+
+                    <button type="button" class="btn-action btn-delete" (click)="deleteEvent(event)" title="Elimina">
+                      <span>🗑️</span> 
+                    </button>
+                  </div>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else if (!loading.isLoading()) {
+    <div class="empty-state">
+      <div class="empty-icon">🎸</div>
+      <h3>Scaletta vuota</h3>
+      <p>Nessun evento in programma. Torna a trovarci presto!</p>
+    </div>
+  }
+</div>

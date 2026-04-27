@@ -1,0 +1,61 @@
+@if (loadingService.isLoading()) {
+  <div class="global-loader-bar">
+    <div class="progress-glow"></div>
+  </div>
+  <div class="loading-shield"></div>
+}
+
+@if (ui.errorMessage(); as msg) {
+  <div class="toast toast-error fade-in">
+    <div class="toast-content">
+      <span class="icon">⚠️</span>
+      <p>{{ msg }}</p>
+    </div>
+    <button class="btn-close-toast" (click)="ui.errorMessage.set(null)">×</button>
+  </div>
+}
+
+@if (ui.successMessage(); as msg) {
+  <div class="toast toast-success fade-in">
+    <div class="toast-content">
+      <span class="icon">✅</span>
+      <p>{{ msg }}</p>
+    </div>
+    <button class="btn-close-toast" (click)="ui.successMessage.set(null)">×</button>
+  </div>
+}
+
+@if (isUserLogged() && !isPublicPage()) {
+  <app-navbar />
+}
+
+<main [class.container]="!isPublicPage()" 
+      [class.blur-content]="ui.showLogin() || ui.showRegister() || loadingService.isLoading()">
+  <router-outlet />
+</main>
+
+@if (ui.showLogin() || ui.showRegister()) {
+  <div class="drawer-backdrop" (click)="ui.closeAll()"></div>
+}
+
+<aside class="side-drawer" [class.open]="ui.showLogin()">
+  <div class="drawer-header">
+    <h3></h3>
+    <button class="btn-action btn-view" (click)="ui.closeAll()">
+      <span>×</span>
+      <span>Torna alla home</span>
+    </button>
+  </div>
+  @if (ui.showLogin()) { <app-login /> }
+</aside>
+
+<aside class="side-drawer register-width" [class.open]="ui.showRegister()">
+  <div class="drawer-header">
+    <h3>Unisciti a noi 🎸</h3>
+    <button class="btn-action btn-view" (click)="ui.closeAll()">
+        <span>×</span>
+        <span>Torna alla home</span>
+    </button>
+  </div>
+  @if (ui.showRegister()) { <app-register /> }
+</aside>

@@ -1,0 +1,121 @@
+<div class="container fade-in">
+
+  <div class="page-header">
+    <div>
+      <h1>💬 Forum della Community</h1>
+      <p class="text-muted">Discuti di musica, gear e live con gli altri appassionati</p>
+    </div>
+    <button class="btn" [class.btn-danger]="showForm()" [class.btn-primary]="!showForm()" (click)="toggleForm()">
+      {{ showForm() ? '✕ Chiudi' : '+ Nuova Discussione' }}
+    </button>
+  </div>
+
+  <div class="pill-group mb-2">
+    @for (cat of categories(); track cat.id) {
+      <button class="pill" 
+              [class.active]="selectedCategoryId() === cat.id"
+              (click)="filterByCategory(cat.id)">
+        {{ cat.name }}
+        <span class="pill-count">{{ cat.threadCount }}</span>
+      </button>
+    }
+  </div>
+
+  @if (showForm()) {
+    <div class="card mb-2 fade-in">
+      <form [formGroup]="threadForm" (ngSubmit)="createThread()">
+        <div class="grid-2-col">
+          <div class="field">
+            <label>Titolo della discussione *</label>
+            <input type="text" formControlName="title" trimValue
+                   placeholder="Es: Quali corde usate per il Drop C?"
+                   [class.invalid]="isFieldInvalid('title')" />
+            
+            @if (isFieldInvalid('title')) {
+              <span class="hint-error">Titolo obbligatorio (min 5 car.)</span>
+            }
+          </div>
+
+          <div class="field">
+            <label>In quale sezione? *</label>
+            <select formControlName="categoryId" [class.invalid]="isFieldInvalid('categoryId')">
+              <option value="">-- Seleziona --</option>
+              @for (cat of categories(); track cat.id) {
+                <option [value]="cat.id">{{ cat.name }}</option>
+              }
+            </select>
+            @if (isFieldInvalid('categoryId')) {
+              <span class="hint-error">Categoria obbligatoria</span>
+            }
+          </div>
+
+          <div class="field">
+            <label>Post Originale</label>
+            <textarea formControlName="content" trimValue rows="4"
+                    placeholder="Scrivi qui il primo post!"
+                    [class.invalid]="isFieldInvalid('content')">
+          </textarea>
+            
+            @if (isFieldInvalid('title')) {
+              <span class="hint-error">Titolo obbligatorio (min 5 car.)</span>
+            }
+          </div>
+        </div>
+        
+        <div class="form-actions mt-1">
+          <button type="submit" class="btn btn-primary" [disabled]="(loading.isLoading() || threadForm.invalid)">
+            {{ loading.isLoading() ? 'Sintonizzazione...' : 'Pubblica Discussione 🚀' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <div class="mt-2">
+    @if (threads().length > 0) {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 40%;">Discussione</th>
+              <th>Categoria</th>
+              <th>Autore</th>
+              <th>Risposte</th>
+              <th>Data</th>
+              @if (auth.isAdmin()) { <th class="text-center">Azioni</th> }
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of threads(); track t.id) {
+              <tr>
+                <td>
+                  <a class="thread-link" [routerLink]="['/forum/threads', t.id]">
+                    {{ t.title }}
+                  </a>
+                </td>
+                <td><span class="badge badge-nav">{{ t.categoryName }}</span></td>
+                <td><span class="text-muted">{{ t.authorUsername }}</span></td>
+                <td><span class="count-badge">💬 {{ t.postCount }}</span></td>
+                <td class="text-muted" style="font-size: 0.8rem;">{{ t.createdAt | date:'dd/MM/yy HH:mm' }}</td>
+                
+                @if (auth.isAdmin()) {
+                  <td class="text-center">
+                    <button class="btn-action btn-delete" (click)="deleteThread(t)" title="Elimina">
+                      <span>🗑️</span> 
+                    </button>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else if (!loading.isLoading()) {
+      <div class="empty-state">
+        <div class="empty-icon">🎸</div>
+        <p>Silenzio in sala... Sii il primo a rompere il ghiaccio!</p>
+      </div>
+    }
+  </div>
+
+</div>

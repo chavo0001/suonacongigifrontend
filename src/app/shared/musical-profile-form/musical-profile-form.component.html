@@ -1,0 +1,76 @@
+<div [formGroup]="formGroup()" class="fade-in">
+
+  <div class="field">
+    <label for="bio"><span>📖</span> La tua Bio Artistica</label>
+    <textarea id="bio" 
+              formControlName="bio" trimValue rows="4"
+              placeholder="Es: Bassista funk con 10 anni di esperienza..."
+              [class.invalid]="formGroup().get('bio')?.invalid && formGroup().get('bio')?.touched">
+    </textarea>
+    
+    @if (formGroup().get('bio'); as bio) {
+      <div class="char-count" 
+       [class.warning]="bioLength >= MAX_BIO_WARNING_LENGTH && bioLength < MAX_BIO_LENGTH"
+       [class.limit-reached]="bioLength >= MAX_BIO_LENGTH">
+    {{ bioLength }} / {{ MAX_BIO_LENGTH }}
+  </div>
+    }
+  </div>
+
+  <div class="field">
+    <label><span>🌟</span> I tuoi Miti & Influenze</label>
+    <div class="search-box">
+      <input type="text"  trimValue
+             [value]="artistSearchQuery()" 
+             (input)="onSearchArtist($event)"
+             placeholder="Cerca un artista...">
+      
+      @if (filteredArtists().length > 0) {
+        <ul class="search-results">
+          @for (artist of filteredArtists(); track artist.id) {
+            <li (click)="addArtist(artist)">{{ artist.name }}</li>
+          }
+        </ul>
+      }
+    </div>
+
+    <div class="chip-group mt-1">
+      @for (artist of formGroup().get('favoriteArtists')?.value; track artist.id) {
+        <span class="chip">
+          {{ artist.name }}
+          <button type="button" class="btn-remove" (click)="removeArtist(artist.id)">×</button>
+        </span>
+      }
+    </div>
+  </div>
+
+  <div class="grid-2-col mt-2">
+    
+    <div class="field">
+      <label><span>🎹</span> Strumenti</label>
+      <div class="tag-group">
+        @for (ins of allInstruments(); track ins.id) {
+          <button type="button" class="tag-item" 
+                  [class.active]="isSelected('instruments', ins.id)"
+                  (click)="onToggleItem('instruments', ins)">
+            {{ ins.name }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="field">
+      <label><span>🎧</span> Generi</label>
+      <div class="tag-group">
+        @for (gen of allGenres(); track gen.id) {
+          <button type="button" class="tag-item" 
+                  [class.active]="isSelected('genres', gen.id)"
+                  (click)="onToggleItem('genres', gen)">
+            {{ gen.name }}
+          </button>
+        }
+      </div>
+    </div>
+
+  </div>
+</div>
