@@ -18,6 +18,7 @@ export class EventsListComponent extends BaseComponent implements OnInit {
 
   // Stato reattivo: la lista degli eventi
   events = signal<EventResponse[]>([]);
+  searchTerm = signal('');
   
   // Feedback granulare sui singoli bottoni (evita che cliccando uno si blocchino tutti)
   actionLoading = signal<Record<number, boolean>>({});
@@ -28,9 +29,14 @@ export class EventsListComponent extends BaseComponent implements OnInit {
 
   loadEvents(): void {
     // La barra laser globale si attiva via Interceptor
-    this.eventService.getAll().subscribe({
+    this.eventService.getAll(this.searchTerm().trim()).subscribe({
       next: data => this.events.set(data ?? [])
     });
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm.set(value);
+    this.loadEvents();
   }
 
   /**

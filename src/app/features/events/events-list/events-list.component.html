@@ -13,6 +13,15 @@
     }
   </div>
 
+  <div class="search-bar">
+    <input
+      type="search"
+      placeholder="Cerca eventi per titolo, descrizione o location"
+      [value]="searchTerm()"
+      (input)="onSearchChange($any($event.target).value)"
+    />
+  </div>
+
   @if (events().length > 0) {
     <div class="table-wrapper">
       <table>
