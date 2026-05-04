@@ -4,7 +4,7 @@ import { DatePipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { switchMap, tap } from 'rxjs/operators';
 import { ForumService } from '../../../core/services/forum.service';
-import { CategoryResponse, ThreadSummary } from '../../../core/models/forum.model';
+import { CategoryResponse, ForumSearchResult, ThreadSummary } from '../../../core/models/forum.model';
 import { BaseComponent } from '../../../shared/base.component';
 
 @Component({
@@ -21,8 +21,11 @@ export class ThreadsListComponent extends BaseComponent implements OnInit {
   // Stato reattivo specifico
   categories = signal<CategoryResponse[]>([]);
   threads = signal<ThreadSummary[]>([]);
+  searchResults = signal<ForumSearchResult[]>([]);
   selectedCategoryId = signal<number | null>(null);
   showForm = signal(false);
+  searchTerm = signal('');
+
 
   threadForm = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.minLength(5)]],
@@ -55,14 +58,53 @@ export class ThreadsListComponent extends BaseComponent implements OnInit {
   }
 
   loadThreads(): void {
+    const search = this.searchTerm().trim();
+    if (search) {
+      this.forumService.searchThreads(search).subscribe({
+        next: data => {
+          this.searchResults.set(data);
+          this.threads.set([]);
+        }
+      });
+      return;
+    }
+
+
+    this.searchResults.set([]);
+
     this.forumService.getThreads(this.selectedCategoryId() ?? undefined).subscribe({
       next: data => this.threads.set(data)
     });
+
   }
+
 
   filterByCategory(id: number | null): void {
     this.selectedCategoryId.set(id);
+    this.searchTerm.set('');
     this.loadThreads();
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm.set(value);
+    this.loadThreads();
+  }
+
+  getHighlightedParts(text: string | null | undefined): string[] {
+    const safeText = text ?? '';
+    const search = this.searchTerm().trim();
+
+    if (!search) {
+      return [safeText];
+    }
+
+    const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return safeText.split(new RegExp(`(${escapedSearch})`, 'gi'));
+  }
+
+
+  isHighlightedPart(part: string): boolean {
+    return part.toLowerCase() === this.searchTerm().trim().toLowerCase();
   }
 
   toggleForm(): void {
