@@ -12,7 +12,8 @@ export const routes: Routes = [
   // 2. AUTH (Paracadute per Deep Linking)
   { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) },
   { path: 'register', loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent) },
-
+  { path: 'verify', loadComponent: () => import('./features/auth/email/email.component').then(m => m.EmailComponent) },
+  
   // 3. AREA PRIVATA (Solo per chi ha il "pass" - authGuard)
   { 
     path: 'events', 
@@ -44,8 +45,8 @@ export const routes: Routes = [
     loadComponent: () => import('./features/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent) 
   },
   { 
-    path: 'admin/events/new', 
-    canActivate: [authGuard, adminGuard], 
+    path: 'events/new', 
+    canActivate: [authGuard], 
     loadComponent: () => import('./features/events/event-form/event-form.component').then(m => m.EventFormComponent) 
   },
   { 
@@ -53,6 +54,14 @@ export const routes: Routes = [
     canActivate: [authGuard, adminGuard], 
     loadComponent: () => import('./features/events/event-form/event-form.component').then(m => m.EventFormComponent) 
   },
+
+  {
+    path: 'admin/email',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () => import('./features/admin/email/admin-email.component').then(m => m.AdminEmailComponent)    
+  },
+
+  
 
   // Catch-all: se l'utente digita roba a caso, torna in Home
   { path: '**', redirectTo: '' }

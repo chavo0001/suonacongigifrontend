@@ -44,9 +44,10 @@ export class AppComponent implements OnInit {
       this.isPublicPage.set(url === '/');
 
       this.ui.errorMessage.set(null);
-      
-      sessionStorage.setItem(this.SESSION_PATH, url);
-      history.replaceState(null, '', '/suonacongigi');
+      if (!url.startsWith('/verify')) {
+          sessionStorage.setItem(this.SESSION_PATH, url);
+          history.replaceState(null, '', '/suonacongigi');
+      }
     });
   }
 
@@ -56,7 +57,7 @@ export class AppComponent implements OnInit {
 
     // RIPRISTINO POST-REFRESH (F5)
     // Fondamentale: se ero in /events, devo tornarci anche se l'URL dice /suonacongigi
-    if (savedPath && savedPath !== '/') {
+    if (savedPath && savedPath !== '/' && !savedPath.startsWith('/verify')) {
       if (isLoggedIn) {
         this.router.navigateByUrl(savedPath, { skipLocationChange: true });
       } else {

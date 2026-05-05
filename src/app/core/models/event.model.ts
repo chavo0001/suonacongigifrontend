@@ -9,17 +9,7 @@ export interface EventResponse {
   seatsAvailable:           number;
   createdBy:                string;
   registeredByCurrentUser:  boolean;
-  // LIKe Stato persistente del cuore per l'utente corrente.
-  likedByCurrentUser?:      boolean;
-  // LIKe Conteggio like restituito dagli endpoint dedicati.
-  likeCount?:               number;
-}
-
-// LIKe Risposta degli endpoint dedicati ai like degli eventi.
-export interface EventLikeResponse {
-  eventId:                  number;
-  likeCount:                number;
-  likedByCurrentUser:       boolean;
+  status: string;
 }
 
 export interface EventRequest {

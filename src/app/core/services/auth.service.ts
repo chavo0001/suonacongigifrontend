@@ -47,15 +47,19 @@ export class AuthService extends BaseService {
 
   /** Esegue la registrazione e logga automaticamente l'utente */
   register(req: RegisterRequest): Observable<AuthResponse> {
-    return this.doPost<AuthResponse>('register', req).pipe(
-      tap(res => this.storeSession(res))
-    );
+    return this.doPost<AuthResponse>('register', req);
+
+  }
+
+  verifyEmail(token: string): Observable<string> {
+    return this.doGet<string>('verify', { token });
   }
 
   /** Pulisce lo stato, rimuove i dati dal disco e torna al login */
   logout(): void {
     this._session.set(null);          // Svuota il segnale dell'utente
-    localStorage.removeItem('token'); // Rimuove il JWT
+    //  localStorage.removeItem('token'); // Rimuove il JWT
+    localStorage.removeItem(this.SESSION_KEY);  //Rimuovo completamente la sessione
     this.uiService.resetAll();        // Chiude eventuali overlay aperti
     this.router.navigate(['/']);      // Torna alla Home
   }

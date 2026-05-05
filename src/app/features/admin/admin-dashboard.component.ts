@@ -1,7 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core'; 
+// Riassunto: Componente dashboard admin che mostra statistiche aggregate e rapide.
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { DashboardService, Stats } from '../../core/services/dashboard.service';
-import { BaseComponent } from '../../shared/base.component'; // Import della base
+import { UserService } from '../../core/services/user.service';
+import { BaseComponent } from '../../shared/base.component';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -12,16 +14,28 @@ import { BaseComponent } from '../../shared/base.component'; // Import della bas
 })
 export class AdminDashboardComponent extends BaseComponent implements OnInit {
   private dashboardService = inject(DashboardService);
+  private userService = inject(UserService);
 
-  // Teniamo solo il segnale dei dati
   stats = signal<Stats | null>(null);
 
   ngOnInit(): void {
-    // La chiamata HTTP attiva automaticamente il LoadingService (barra laser)
+    this.caricaStats();
+  }
+
+  caricaStats(): void {
     this.dashboardService.getDashboardStats().subscribe({
       next: (data) => this.stats.set(data)
-      // L'errore non va gestito qui: se il server "stecca", 
-      // il GlobalErrorInterceptor lo urla nel toast globale.
+    });
+  }
+
+  eliminaUtente(id: number, username: string): void {
+    if (!confirm(`Sei sicuro di voler eliminare l'utente "${username}"? L'operazione è irreversibile.`)) return;
+
+    this.userService.deleteUser(id).subscribe({
+      next: () => {
+        this.notifySuccess(`Utente "${username}" eliminato con successo`);
+        this.caricaStats(); // ricarica la tabella
+      }
     });
   }
 }

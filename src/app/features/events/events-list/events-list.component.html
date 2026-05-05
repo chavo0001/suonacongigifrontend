@@ -1,14 +1,14 @@
 <div class="container fade-in">
-  
+
   <div class="page-header">
     <div class="header-text">
-      <h1>🎵 Il Palco degli Eventi</h1>
+      <h1>Il Palco degli Eventi</h1>
       <p class="text-muted">La tua scaletta personale per i prossimi live</p>
     </div>
-    
-    @if (auth.isAdmin()) {
-      <a routerLink="/admin/events/new" class="btn btn-primary">
-        <span>+</span> Nuovo Evento
+
+    @if (auth.isLoggedIn()) {
+      <a routerLink="/events/new" class="btn btn-primary">
+        <span>+</span> Crea Evento
       </a>
     }
   </div>
@@ -30,7 +30,7 @@
             <th>Evento</th>
             <th>Data e Ora</th>
             <th>Location</th>
-            <th>Disponibilità</th>
+            <th>Disponibilita</th>
             <th>Stato</th>
             <th class="text-right">Azioni</th>
           </tr>
@@ -44,7 +44,7 @@
               </td>
               <td>{{ event.eventDate | date:'dd/MM/yyyy HH:mm' }}</td>
               <td>{{ event.location }}</td>
-              
+
               <td>
                 <div class="progress-container">
                   <div class="progress-label">
@@ -53,7 +53,7 @@
                     </span>
                   </div>
                   <div class="progress-track">
-                    <div class="progress-bar" 
+                    <div class="progress-bar"
                          [style.width.%]="(event.seatsBooked / event.maxSeats) * 100"
                          [class.bg-error]="event.seatsAvailable === 0">
                     </div>
@@ -62,34 +62,22 @@
               </td>
 
               <td>
-                @if (event.registeredByCurrentUser) {
-                  <span class="badge badge-success">✓ ISCRITTO</span>
-                } @else if (event.seatsAvailable === 0) {
-                  <span class="badge badge-error">SOLD OUT</span>
+                @switch(event.status) {
+                  @case('PENDING') { <span class="badge badge-warning">In Attesa</span> }
+                  @case('APPROVED') { <span class="badge badge-success">Approvato</span> }
+                  @case('SUSPENDED') { <span class="badge badge-error">Sospeso</span> }
+                  @case('REFUSED') { <span class="badge badge-error">Rifiutato</span> }
                 }
               </td>
 
               <td class="text-right">
                 <div class="action-group">
-                  <!-- LIKe Cuore persistente per salvare/rimuovere il like sull'evento. -->
-                  <button
-                    type="button"
-                    class="like-button"
-                    [class.liked]="event.likedByCurrentUser"
-                    [disabled]="likeLoading()[event.id]"
-                    (click)="toggleLike(event)"
-                    [attr.aria-label]="event.likedByCurrentUser ? 'Rimuovi like' : 'Aggiungi like'"
-                    [title]="event.likedByCurrentUser ? 'Rimuovi like' : 'Aggiungi like'">
-                    <span class="like-heart">♥</span>
-                    <span class="like-count">{{ event.likeCount ?? 0 }}</span>
-                  </button>
-
                   @if (!auth.isAdmin()) {
                     <button
                       (click)="toggleRegistration(event)"
                       [disabled]="actionLoading()[event.id] || (!event.registeredByCurrentUser && event.seatsAvailable === 0)"
                       [class]="event.registeredByCurrentUser ? 'btn btn-primary btn-sm' : 'btn btn-primary btn-sm'">
-                      
+
                       @if (actionLoading()[event.id]) {
                         <span class="loader-small"></span>
                       } @else {
@@ -99,16 +87,21 @@
                   }
 
                   @if (auth.isAdmin()) {
-                  <div class="action-group">
-                    <a [routerLink]="['/admin/events', event.id, 'edit']" 
-                      class="btn-action btn-edit" title="Modifica">
-                      <span>✏️</span> 
-                    </a>
+                    <div class="action-group">
+                      <a [routerLink]="['/admin/events', event.id, 'edit']"
+                         class="btn-action btn-edit" title="Modifica">
+                        <span>Modifica</span>
+                      </a>
 
-                    <button type="button" class="btn-action btn-delete" (click)="deleteEvent(event)" title="Elimina">
-                      <span>🗑️</span> 
-                    </button>
-                  </div>
+                      <button type="button" class="btn-action btn-delete" (click)="deleteEvent(event)" title="Elimina">
+                        <span>Elimina</span>
+                      </button>
+                    </div>
+                  }
+
+                  @if (auth.isAdmin() && event.status === 'PENDING') {
+                    <button (click)="approveEvent(event.id)" class="btn btn-sm btn-success">Approva</button>
+                    <button (click)="rejectEvent(event.id)" class="btn btn-sm btn-error">Rifiuta</button>
                   }
                 </div>
               </td>
@@ -119,7 +112,7 @@
     </div>
   } @else if (!loading.isLoading()) {
     <div class="empty-state">
-      <div class="empty-icon">🎸</div>
+      <div class="empty-icon"></div>
       <h3>Scaletta vuota</h3>
       <p>Nessun evento in programma. Torna a trovarci presto!</p>
     </div>

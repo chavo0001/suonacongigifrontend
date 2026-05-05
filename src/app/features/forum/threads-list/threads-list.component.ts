@@ -26,6 +26,7 @@ export class ThreadsListComponent extends BaseComponent implements OnInit {
   showForm = signal(false);
   searchTerm = signal('');
 
+
   threadForm = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.minLength(5)]],
     categoryId: ['', Validators.required],
@@ -68,11 +69,15 @@ export class ThreadsListComponent extends BaseComponent implements OnInit {
       return;
     }
 
+
     this.searchResults.set([]);
+
     this.forumService.getThreads(this.selectedCategoryId() ?? undefined).subscribe({
       next: data => this.threads.set(data)
     });
+
   }
+
 
   filterByCategory(id: number | null): void {
     this.selectedCategoryId.set(id);
@@ -96,6 +101,7 @@ export class ThreadsListComponent extends BaseComponent implements OnInit {
     const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return safeText.split(new RegExp(`(${escapedSearch})`, 'gi'));
   }
+
 
   isHighlightedPart(part: string): boolean {
     return part.toLowerCase() === this.searchTerm().trim().toLowerCase();

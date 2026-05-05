@@ -5,7 +5,9 @@
       <h1>⚙️ Dashboard Admin</h1>
       <p class="text-muted">Gestione portale Suona con Gigi</p>
     </div>
+  
   </div>
+
 
   @if (stats(); as s) {
     
@@ -14,12 +16,10 @@
         <div class="kpi-value">{{ s.totalUsers }}</div>
         <div class="text-muted">Utenti Registrati</div>
       </div>
-      
       <div class="card text-center">
         <div class="kpi-value">{{ s.totalEvents }}</div>
         <div class="text-muted">Eventi Creati</div>
       </div>
-      
       <div class="card text-center">
         <div class="kpi-value">{{ s.totalThreads }}</div>
         <div class="text-muted">Thread nel Forum</div>
@@ -55,7 +55,7 @@
     </div>
 
     <div class="mt-2">
-      <h2 class="mb-1">👤 Utenti recenti</h2>
+      <h2 class="mb-1">👤 Gestione utenti</h2>
       <div class="table-wrapper">
         <table>
           <thead>
@@ -63,6 +63,7 @@
               <th>Username</th>
               <th>Email</th>
               <th class="text-center">Ruolo</th>
+              <th class="text-center">Azioni</th>
             </tr>
           </thead>
           <tbody>
@@ -74,6 +75,17 @@
                   <span class="badge" [class.badge-error]="u.role === 'ADMIN'" [class.badge-success]="u.role !== 'ADMIN'">
                     {{ u.role }}
                   </span>
+                </td>
+                <td class="text-center">
+                  @if (u.role !== 'ADMIN') {
+                    <button
+                      class="btn btn-danger btn-sm"
+                      (click)="eliminaUtente(u.id, u.username)">
+                      🗑️ Elimina
+                    </button>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
                 </td>
               </tr>
             }

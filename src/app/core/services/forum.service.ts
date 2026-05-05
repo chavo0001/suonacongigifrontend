@@ -27,6 +27,7 @@ export class ForumService extends BaseService {
     return this.doGet<ThreadSummary[]>(`categories/${categoryId}/threads`);
   }
 
+  // Funzione di ricerca: accetta una stringa di ricerca e restituisce i thread che corrispondono
   searchThreads(search: string): Observable<ForumSearchResult[]> {
     const params = { search };
     return this.doGet<ForumSearchResult[]>('search', params);
