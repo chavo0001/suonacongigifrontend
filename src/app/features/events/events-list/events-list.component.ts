@@ -1,9 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe, SlicePipe } from '@angular/common';
-import { finalize } from 'rxjs'; // Cruciale per spegnere i caricamenti
+// LIKe Aggiunge gli operatori necessari per caricare e aggiornare i like evento.
+import { catchError, finalize, forkJoin, map, of } from 'rxjs';
 import { EventService } from '../../../core/services/event.service';
-import { EventResponse } from '../../../core/models/event.model';
+// LIKe Importa anche la risposta dei like degli eventi.
+import { EventLikeResponse, EventResponse } from '../../../core/models/event.model';
 import { BaseComponent } from '../../../shared/base.component';
 
 @Component({
@@ -18,10 +20,12 @@ export class EventsListComponent extends BaseComponent implements OnInit {
 
   // Stato reattivo: la lista degli eventi
   events = signal<EventResponse[]>([]);
-  searchTerm = signal('');
   
   // Feedback granulare sui singoli bottoni (evita che cliccando uno si blocchino tutti)
   actionLoading = signal<Record<number, boolean>>({});
+
+  // LIKe Feedback granulare per il cuore di ogni evento.
+  likeLoading = signal<Record<number, boolean>>({});
 
   ngOnInit(): void {
     this.loadEvents();
@@ -29,14 +33,71 @@ export class EventsListComponent extends BaseComponent implements OnInit {
 
   loadEvents(): void {
     // La barra laser globale si attiva via Interceptor
-    this.eventService.getAll(this.searchTerm().trim()).subscribe({
-      next: data => this.events.set(data ?? [])
+    this.eventService.getAll().subscribe({
+      // LIKe Dopo la lista eventi recupera lo stato persistente dei cuori.
+      next: data => {
+        const loadedEvents = data ?? [];
+        this.events.set(loadedEvents);
+        this.loadLikes(loadedEvents);
+      }
     });
   }
 
-  onSearchChange(value: string): void {
-    this.searchTerm.set(value);
-    this.loadEvents();
+  // LIKe Carica conteggio e stato like senza bloccare la visualizzazione degli eventi.
+  private loadLikes(events: EventResponse[]): void {
+    if (!events.length) {
+      return;
+    }
+
+    const requests = events.map(event =>
+      this.eventService.getLikes(event.id).pipe(
+        catchError(() => of<EventLikeResponse>({
+          eventId: event.id,
+          likeCount: event.likeCount ?? 0,
+          likedByCurrentUser: event.likedByCurrentUser ?? false
+        }))
+      )
+    );
+
+    forkJoin(requests).pipe(
+      map(likes => new Map(likes.map(like => [like.eventId, like])))
+    ).subscribe({
+      next: likesByEventId => {
+        this.events.update(currentEvents => currentEvents.map(event => {
+          const like = likesByEventId.get(event.id);
+          return like ? { ...event, ...like } : event;
+        }));
+      }
+    });
+  }
+
+  // LIKe Alterna il cuore rosso e salva la scelta sul backend.
+  toggleLike(event: EventResponse): void {
+    if (!this.auth.isLoggedIn()) {
+      this.notifySuccess('Accedi per salvare i tuoi eventi preferiti.');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const isLiking = !event.likedByCurrentUser;
+    this.setLikeLoading(event.id, true);
+
+    const request$ = isLiking
+      ? this.eventService.like(event.id)
+      : this.eventService.unlike(event.id);
+
+    request$.pipe(
+      finalize(() => this.setLikeLoading(event.id, false))
+    ).subscribe({
+      next: like => this.applyLike(like)
+    });
+  }
+
+  // LIKe Aggiorna localmente il singolo evento dopo POST/DELETE.
+  private applyLike(like: EventLikeResponse): void {
+    this.events.update(currentEvents => currentEvents.map(event =>
+      event.id === like.eventId ? { ...event, ...like } : event
+    ));
   }
 
   /**
@@ -80,26 +141,14 @@ export class EventsListComponent extends BaseComponent implements OnInit {
       });
     }
   }
-  approveEvent(id: number): void {
-    this.eventService.updateStatus(id, 'APPROVED').subscribe({
-      next: () => {
-        this.notifySuccess('Evento approvato!');
-        this.loadEvents();
-      }
-    });
-  }
-
-  rejectEvent(id: number): void {
-    this.eventService.updateStatus(id, 'REFUSED').subscribe({
-      next: () => {
-        this.notifySuccess('Evento rifiutato.');
-        this.loadEvents();
-      }
-    });
-  }
 
   // Helper privato per gestire il record dei loading
   private setLocalLoading(id: number, state: boolean) {
     this.actionLoading.update(prev => ({ ...prev, [id]: state }));
+  }
+
+  // LIKe Helper dedicato al loading del cuore.
+  private setLikeLoading(id: number, state: boolean) {
+    this.likeLoading.update(prev => ({ ...prev, [id]: state }));
   }
 }

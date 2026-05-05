@@ -1,9 +1,7 @@
-// Riassunto: Componente dashboard admin che mostra statistiche aggregate e rapide.
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core'; 
 import { DatePipe } from '@angular/common';
 import { DashboardService, Stats } from '../../core/services/dashboard.service';
-import { UserService } from '../../core/services/user.service';
-import { BaseComponent } from '../../shared/base.component';
+import { BaseComponent } from '../../shared/base.component'; // Import della base
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -14,28 +12,16 @@ import { BaseComponent } from '../../shared/base.component';
 })
 export class AdminDashboardComponent extends BaseComponent implements OnInit {
   private dashboardService = inject(DashboardService);
-  private userService = inject(UserService);
 
+  // Teniamo solo il segnale dei dati
   stats = signal<Stats | null>(null);
 
   ngOnInit(): void {
-    this.caricaStats();
-  }
-
-  caricaStats(): void {
+    // La chiamata HTTP attiva automaticamente il LoadingService (barra laser)
     this.dashboardService.getDashboardStats().subscribe({
       next: (data) => this.stats.set(data)
-    });
-  }
-
-  eliminaUtente(id: number, username: string): void {
-    if (!confirm(`Sei sicuro di voler eliminare l'utente "${username}"? L'operazione è irreversibile.`)) return;
-
-    this.userService.deleteUser(id).subscribe({
-      next: () => {
-        this.notifySuccess(`Utente "${username}" eliminato con successo`);
-        this.caricaStats(); // ricarica la tabella
-      }
+      // L'errore non va gestito qui: se il server "stecca", 
+      // il GlobalErrorInterceptor lo urla nel toast globale.
     });
   }
 }

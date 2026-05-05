@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseService } from './base.service';  
-import { EventRequest, EventResponse } from '../models/event.model';
+// LIKe Importa anche il DTO dei like degli eventi.
+import { EventLikeResponse, EventRequest, EventResponse } from '../models/event.model';
 
 @Injectable({ providedIn: 'root' })
 export class EventService extends BaseService {
@@ -12,9 +13,8 @@ export class EventService extends BaseService {
   // Nota: il costruttore è sparito! Il BaseService usa inject(HttpClient) 
   // quindi non serve più passarlo manualmente qui.
 
-  getAll(search?: string): Observable<EventResponse[]> {
-    const params = search ? { search } : undefined;
-    return this.doGet<EventResponse[]>('', params);
+  getAll(): Observable<EventResponse[]> {
+    return this.doGet<EventResponse[]>();
   }
 
   getById(id: number): Observable<EventResponse> {
@@ -29,10 +29,6 @@ export class EventService extends BaseService {
     return this.doPut<EventResponse>(`${id}`, req);
   }
 
-  updateStatus(id: number, status: string): Observable<EventResponse> {
-    return this.doPut<EventResponse>(`${id}/status?status=${status}`, {});
-  }
-
   delete(id: number): Observable<void> {
     return this.doDelete<void>(`${id}`);
   }
@@ -43,5 +39,20 @@ export class EventService extends BaseService {
 
   unregister(id: number): Observable<void> {
     return this.doDelete<void>(`${id}/register`);
+  }
+
+  // LIKe Legge conteggio e stato del cuore per un evento.
+  getLikes(id: number): Observable<EventLikeResponse> {
+    return this.doGet<EventLikeResponse>(`${id}/likes`);
+  }
+
+  // LIKe Salva il cuore rosso per l'utente autenticato.
+  like(id: number): Observable<EventLikeResponse> {
+    return this.doPost<EventLikeResponse>(`${id}/likes`, {});
+  }
+
+  // LIKe Rimuove il cuore rosso per l'utente autenticato.
+  unlike(id: number): Observable<EventLikeResponse> {
+    return this.doDelete<EventLikeResponse>(`${id}/likes`);
   }
 }

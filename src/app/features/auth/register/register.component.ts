@@ -63,7 +63,7 @@ export class RegisterComponent extends BaseComponent {
       }
     };
 
-    /*/ La chiamata attiva automaticamente la barra laser via Interceptor
+    // La chiamata attiva automaticamente la barra laser via Interceptor
     this.auth.register(payload).subscribe({
       next: () => {
         this.notifySuccess("Benvenuto nella band! 🎸 Il tuo profilo è pronto.");
@@ -71,18 +71,7 @@ export class RegisterComponent extends BaseComponent {
         this.router.navigate(['/events']);
       }
       // Errori (es: email già esistente) gestiti dal GlobalErrorInterceptor
-    });*/
-
-    this.auth.register(payload).subscribe({
-          next: () => {
-          this.notifySuccess('Check your email to verify your account');
-          this.ui.resetAll();     // close register
-          this.ui.openLogin();    // open login
-  }
-});
-
-
-
+    });
   }
 
   isFieldInvalid(field: string): boolean {

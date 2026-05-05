@@ -1,18 +1,50 @@
-.search-bar {
-  margin-bottom: 1.5rem;
+/* LIKe Layout compatto per affiancare cuore e azioni evento. */
+.action-group {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
 
-.search-bar input {
-  width: 100%;
-  max-width: 420px;
-  padding: 0.75rem 1rem;
-  border: 1px solid #d7d7d7;
-  border-radius: 8px;
+/* LIKe Bottone cuore neutro, senza alterare lo stile originale degli altri pulsanti. */
+.like-button {
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  background: #ffffff;
+  color: #6b7280;
+  border-radius: 999px;
+  min-width: 3.75rem;
+  height: 2rem;
+  padding: 0 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+/* LIKe Stato salvato: il cuore resta rosso finche l'utente non lo rimuove. */
+.like-button.liked {
+  color: #dc2626;
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+/* LIKe Stato disabilitato durante il salvataggio del like. */
+.like-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+/* LIKe Simbolo del cuore coerente e stabile nel layout. */
+.like-heart {
   font-size: 1rem;
+  line-height: 1;
 }
 
-.search-bar input:focus {
-  outline: none;
-  border-color: #7c3aed;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+/* LIKe Conteggio like leggibile accanto al cuore. */
+.like-count {
+  min-width: 1ch;
+  font-size: 0.85rem;
+  font-weight: 600;
 }

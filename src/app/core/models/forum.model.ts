@@ -14,18 +14,6 @@ export interface ThreadSummary {
   createdAt:      string;
 }
 
-export interface ForumSearchResult {
-  threadId:      number;
-  title:         string;
-  categoryName:  string;
-  authorName:    string;
-  createdAt:     string;
-  postCount:     number;
-  matchedPostId: number | null;
-  snippet:       string;
-  matchType:     'TITLE' | 'POST';
-}
-
 export interface PostResponse {
   id:             number;
   authorName: string;
