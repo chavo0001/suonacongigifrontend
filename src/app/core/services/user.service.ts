@@ -5,7 +5,7 @@ import { UserProfile } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService extends BaseService {
-  
+
   protected override readonly endpoint = 'users';
 
   getMe(): Observable<UserProfile> {
@@ -14,5 +14,9 @@ export class UserService extends BaseService {
 
   updateMusicalProfile(data: any): Observable<UserProfile> {
     return this.doPut<UserProfile>('me', data);
+  }
+
+  deleteUser(id: number): Observable<void> {
+    return this.doDelete<void>(`${id}`);
   }
 }
