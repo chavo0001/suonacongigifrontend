@@ -1,0 +1,9 @@
+<div style="text-align: center; margin-top: 50px;">
+  <h2 *ngIf="success" style="color: green;">
+    {{ message() }}
+  </h2>
+
+  <h2 *ngIf="!success" style="color: red;">
+    {{ message() }}
+  </h2>
+</div>

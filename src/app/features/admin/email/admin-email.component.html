@@ -1,0 +1,28 @@
+@if (template(); as t) {
+  <div class="container">
+    <h1>Email Template</h1>
+
+    <div class="mb-1">
+      <label>Sender</label>
+      <input type="text" [(ngModel)]="t.sender" />
+    </div>
+
+    <div class="mb-1">
+      <label>Subject</label>
+      <input type="text" [(ngModel)]="t.subject" />
+    </div>
+
+    <div class="mb-1">
+      <label>Body</label>
+      <editor
+        [init]="editorConfig"
+        [ngModel]="t.content"
+        (ngModelChange)="template.update(x => x ? ({ ...x, content: $event }) : x)">
+      </editor>
+    </div>
+
+    <button (click)="save()">Save</button>
+  </div>
+} @else {
+  <p>Loading template...</p>
+}
