@@ -13,8 +13,9 @@ export class EventService extends BaseService {
   // Nota: il costruttore è sparito! Il BaseService usa inject(HttpClient) 
   // quindi non serve più passarlo manualmente qui.
 
-  getAll(): Observable<EventResponse[]> {
-    return this.doGet<EventResponse[]>();
+  getAll(search?: string): Observable<EventResponse[]> {
+    const params = search ? { search } : undefined;
+    return this.doGet<EventResponse[]>('', params);
   }
 
   getById(id: number): Observable<EventResponse> {

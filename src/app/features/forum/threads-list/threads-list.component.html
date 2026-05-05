@@ -10,6 +10,54 @@
     </button>
   </div>
 
+  <div class="search-bar">
+    <input
+      type="search"
+      placeholder="Cerca nel forum per titolo o contenuto dei post"
+      [value]="searchTerm()"
+      (input)="onSearchChange($any($event.target).value)"
+    />
+  </div>
+
+  @if (searchTerm().trim()) {
+    <div class="mt-2">
+      @if (searchResults().length > 0) {
+        <div class="search-results">
+          @for (result of searchResults(); track result.matchType + '-' + result.threadId + '-' + result.matchedPostId) {
+            <a class="search-result-card" [routerLink]="['/forum/threads', result.threadId]">
+              <div class="search-result-header">
+                <span class="badge badge-nav">{{ result.categoryName }}</span>
+                <span class="text-muted">{{ result.matchType === 'TITLE' ? 'Titolo' : 'Post' }}</span>
+              </div>
+
+              <h3>
+                @for (part of getHighlightedParts(result.title); track $index) {
+                  <span [class.search-highlight]="isHighlightedPart(part)">{{ part }}</span>
+                }
+              </h3>
+
+              <p class="search-snippet">
+                @for (part of getHighlightedParts(result.snippet); track $index) {
+                  <span [class.search-highlight]="isHighlightedPart(part)">{{ part }}</span>
+                }
+              </p>
+
+              <div class="search-result-meta">
+                <span>{{ result.authorName }}</span>
+                <span>{{ result.postCount }} risposte</span>
+                <span>{{ result.createdAt | date:'dd/MM/yy HH:mm' }}</span>
+              </div>
+            </a>
+          }
+        </div>
+      } @else if (!loading.isLoading()) {
+        <div class="empty-state">
+          <p>Nessun risultato trovato per "{{ searchTerm() }}".</p>
+        </div>
+      }
+    </div>
+  } @else {
+
   <div class="pill-group mb-2">
     @for (cat of categories(); track cat.id) {
       <button class="pill" 
@@ -117,5 +165,7 @@
       </div>
     }
   </div>
+
+  }
 
 </div>

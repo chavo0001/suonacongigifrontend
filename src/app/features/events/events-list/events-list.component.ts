@@ -20,6 +20,7 @@ export class EventsListComponent extends BaseComponent implements OnInit {
 
   // Stato reattivo: la lista degli eventi
   events = signal<EventResponse[]>([]);
+  searchTerm = signal('');
   
   // Feedback granulare sui singoli bottoni (evita che cliccando uno si blocchino tutti)
   actionLoading = signal<Record<number, boolean>>({});
@@ -33,7 +34,7 @@ export class EventsListComponent extends BaseComponent implements OnInit {
 
   loadEvents(): void {
     // La barra laser globale si attiva via Interceptor
-    this.eventService.getAll().subscribe({
+    this.eventService.getAll(this.searchTerm().trim()).subscribe({
       // LIKe Dopo la lista eventi recupera lo stato persistente dei cuori.
       next: data => {
         const loadedEvents = data ?? [];
@@ -41,6 +42,11 @@ export class EventsListComponent extends BaseComponent implements OnInit {
         this.loadLikes(loadedEvents);
       }
     });
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm.set(value);
+    this.loadEvents();
   }
 
   // LIKe Carica conteggio e stato like senza bloccare la visualizzazione degli eventi.
