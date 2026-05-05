@@ -1,0 +1,90 @@
+<div class="container fade-in">
+  
+  <nav class="breadcrumb">
+    <a routerLink="/forum">Forum</a>
+    <span class="sep">›</span>
+    @if (thread(); as t) {
+      <span class="current">{{ t.categoryName }}</span>
+    }
+  </nav>
+
+  @if (thread(); as t) {
+    <header class="thread-header-dark">
+      <h1>{{ t.title }}</h1>
+      <div class="thread-meta">
+        <span class="badge badge-nav">{{ t.categoryName }}</span>
+        <span class="date">🗓 {{ t.createdAt | date:"dd/MM/yyyy HH:mm" }}</span>
+        <span class="count">💬 {{ t.posts.length }} risposte</span>
+      </div>
+    </header>
+
+    <div class="posts-list mt-2">
+      @for (post of t.posts; track post.id; let i = $index) {
+        <article class="post-card" [class.is-op]="i === 0">
+          <div class="post-aside">
+            <div class="avatar">{{ post.authorName.charAt(0) | uppercase }}</div>
+            <div class="author-info">
+              <strong>{{ post.authorName }}</strong>
+              <small>{{ post.createdAt | date:'dd/MM/yy HH:mm' }}</small>
+            </div>
+          </div>
+
+          <div class="post-content">
+            <p>{{ post.content }}</p>
+          </div>
+
+          @if (auth.isAdmin() || post.authorName === auth.currentUser()?.username) {
+            <div class="post-actions">
+              <button class="btn-action btn-delete" (click)="deletePost(post)" title="Elimina post">
+                <span>🗑️</span> 
+              </button>
+            </div>
+          }
+        </article>
+      }
+    </div>
+
+    @if (t.posts.length === 0) {
+      <div class="empty-state">
+        <p>Il locale è vuoto... rompi il ghiaccio e scrivi qualcosa!</p>
+      </div>
+    }
+
+    <div class="card mt-2">
+      <h3 class="mb-1">Aggiungi la tua voce</h3>
+      <form [formGroup]="replyForm" (ngSubmit)="submitReply()">
+        
+        <div class="field">
+          <textarea formControlName="content" trimValue rows="4"
+                    placeholder="La tua risposta..."
+                    [class.invalid]="isInvalid('content') || charCount() > MAX_POST_LENGTH">
+          </textarea>
+          
+          @if (replyForm.get('content')?.touched) {
+            @if (replyForm.get('content')?.errors?.['required']) {
+              <span class="hint-error">Il contenuto non può essere vuoto!</span>
+            }
+            @if (charCount() > MAX_POST_LENGTH) {
+              <span class="hint-error">Calma il riff! Hai superato il limite di caratteri consentiti.</span>
+            }
+          }
+        </div>
+
+        <div class="reply-footer">
+          <span class="char-count" 
+                [class.warning]="charCount() >= MAX_POST_WARNING_LENGTH && charCount() < MAX_POST_LENGTH"
+                [class.limit-reached]="charCount() >= MAX_POST_LENGTH">
+            {{ charCount() }} / {{ MAX_POST_LENGTH }}
+          </span>
+
+          <button type="submit" 
+                  class="btn btn-primary" 
+                  [disabled]="isSubmitDisabled()">
+            {{ loading.isLoading() ? 'Pubblicazione...' : '💬 Pubblica risposta' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  }
+</div>

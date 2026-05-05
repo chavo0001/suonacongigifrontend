@@ -1,0 +1,90 @@
+<div class="container fade-in">
+  
+  <div class="page-header">
+    <div>
+      <h1>⚙️ Dashboard Admin</h1>
+      <p class="text-muted">Gestione portale Suona con Gigi</p>
+    </div>
+  </div>
+
+  @if (stats(); as s) {
+    
+    <div class="kpi-grid">
+      <div class="card text-center">
+        <div class="kpi-value">{{ s.totalUsers }}</div>
+        <div class="text-muted">Utenti Registrati</div>
+      </div>
+      
+      <div class="card text-center">
+        <div class="kpi-value">{{ s.totalEvents }}</div>
+        <div class="text-muted">Eventi Creati</div>
+      </div>
+      
+      <div class="card text-center">
+        <div class="kpi-value">{{ s.totalThreads }}</div>
+        <div class="text-muted">Thread nel Forum</div>
+      </div>
+    </div>
+
+    <div class="mt-2">
+      <h2 class="mb-1">📅 Prossimi eventi</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Evento</th>
+              <th>Data</th>
+              <th>Disponibilità</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (e of s.upcomingEvents; track e.id) {
+              <tr>
+                <td><strong>{{ e.title }}</strong></td>
+                <td>{{ e.eventDate | date:'dd/MM HH:mm' }}</td>
+                <td>
+                  <span [class.text-error]="e.seatsAvailable <= 5" [class.fw-bold]="e.seatsAvailable <= 5">
+                    {{ e.seatsAvailable }} / {{ e.maxSeats }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-2">
+      <h2 class="mb-1">👤 Utenti recenti</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th class="text-center">Ruolo</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of s.recentUsers; track u.id) {
+              <tr>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+                <td class="text-center">
+                  <span class="badge" [class.badge-error]="u.role === 'ADMIN'" [class.badge-success]="u.role !== 'ADMIN'">
+                    {{ u.role }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  } @else {
+    <div class="text-center mt-2">
+      <p class="text-muted">Recupero dati dal backstage...</p>
+    </div>
+  }
+</div>

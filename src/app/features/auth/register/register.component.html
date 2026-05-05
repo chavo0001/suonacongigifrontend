@@ -1,0 +1,72 @@
+<div class="auth-wrapper fade-in">
+  <div class="card auth-card register-width">
+    
+    <div class="auth-header">
+      <span class="logo-icon">🎸</span>
+      <h2>Crea il tuo account</h2>
+      <p class="text-muted">Unisciti alla community di musicisti</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      
+      <div class="section-form">
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" type="text" formControlName="username" trimValue
+                 placeholder="es. Jimi_88" [class.invalid]="isFieldInvalid('username')">
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" formControlName="email" trimValue
+                 placeholder="tua@email.it" [class.invalid]="isFieldInvalid('email')">
+        </div>
+
+        <div class="grid-2-col">
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" type="password" formControlName="password" 
+                   placeholder="Min. 6 caratteri" [class.invalid]="isFieldInvalid('password')">
+          </div>
+
+          <div class="field">
+            <label for="confirm">Conferma Password</label>
+            <input id="confirm" type="password" formControlName="confirmPassword" 
+                   placeholder="Ripeti password" 
+                   [class.invalid]="isFieldInvalid('confirmPassword') || showPasswordMismatch">
+          </div>
+        </div>
+
+        @if (showPasswordMismatch) {
+          <span class="hint-error">Le password non coincidono</span>
+        }
+      </div>
+
+      <hr class="separator">
+
+      <div class="section-form">
+        <h3 class="mb-1">Il tuo Profilo Musicale</h3>
+        <p class="text-muted mb-2" style="font-size: 0.85rem;">
+          Queste informazioni sono obbligatorie per completare la registrazione
+        </p>
+        
+        <app-musical-profile-form [formGroup]="form.controls.musicalProfile" />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-2" 
+              [disabled]="form.invalid || loading.isLoading()">
+        @if (loading.isLoading()) {
+          <span>Creazione account in corso...</span>
+        } @else if (form.invalid) {
+          <span>Compila tutti i campi obbligatori</span>
+        } @else {
+          <span>Registrati e Inizia a Suonare! 🚀</span>
+        }
+      </button>
+
+      <p class="switch-link">
+        Hai già un account? <a (click)="ui.openLogin()">Accedi qui</a>
+      </p>
+    </form>
+  </div>
+</div>

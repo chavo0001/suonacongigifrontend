@@ -1,0 +1,40 @@
+/* Anteprima specifica dell'evento */
+.preview-box {
+    background: var(--bg-app);
+    border-radius: var(--radius);
+    padding: 1rem 1.2rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid var(--primary);
+}
+
+.preview-label { 
+    font-size: .75rem; 
+    color: var(--text-muted); 
+    margin-bottom: .5rem; 
+    font-weight: 700; 
+    text-transform: uppercase;
+}
+
+.preview-title { 
+    font-weight: 800; 
+    color: var(--primary); 
+    font-size: 1.2rem; 
+    margin-bottom: 0.3rem;
+}
+
+.preview-details { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 15px; 
+    font-size: .9rem; 
+    color: var(--text-main); 
+}
+
+/* Allineamento bottoni fondo pagina */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+}

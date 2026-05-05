@@ -1,0 +1,85 @@
+<div class="container fade-in">
+  
+  <div class="page-header">
+    <div>
+      <h1>{{ isEdit() ? '✏️ Modifica Evento' : '🎵 Nuovo Evento' }}</h1>
+      <p class="text-muted">
+        {{ isEdit() ? 'Aggiorna i dettagli per la band' : 'Crea un nuovo evento per la community' }}
+      </p>
+    </div>
+    <a routerLink="/events" class="btn btn-outline btn-sm">← Torna alla lista</a>
+  </div>
+
+  <div class="card" style="max-width: 800px; margin: 0 auto;"> 
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="field">
+        <label for="title">Titolo evento *</label>
+        <input id="title" type="text" formControlName="title" trimValue
+               placeholder="es. Jam Session Blues – Aprile"
+               [class.invalid]="isFieldInvalid('title')" />
+        
+        @if (isFieldInvalid('title')) {
+          <span class="hint-error">{{ getErrorMessage('title') }}</span>
+        }
+      </div>
+
+      <div class="grid-2-col">
+        <div class="field">
+          <label for="eventDate">Data e ora *</label>
+          <input id="eventDate" type="datetime-local" formControlName="eventDate" trimValue
+                 [class.invalid]="isFieldInvalid('eventDate')" />
+          
+          @if (isFieldInvalid('eventDate')) {
+            <span class="hint-error">Data obbligatoria</span>
+          }
+        </div>
+
+        <div class="field">
+          <label for="maxSeats">Posti totali *</label>
+          <input id="maxSeats" type="number" formControlName="maxSeats" trimValue min="1"
+                 placeholder="es. 20"
+                 [class.invalid]="isFieldInvalid('maxSeats')" />
+          
+          @if (isFieldInvalid('maxSeats')) {
+            <span class="hint-error">{{ getErrorMessage('maxSeats') }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="location">Luogo</label>
+        <input id="location" type="text" formControlName="location" trimValue
+               placeholder="es. Blue Note, Milano" />
+      </div>
+
+      <div class="field">
+        <label for="description">Descrizione</label>
+        <textarea id="description" formControlName="description" rows="4" trimValue
+                  placeholder="Di cosa si tratta? Scaletta, requisiti..."></textarea>
+      </div>
+
+      @if (formValues().title) {
+        <div class="preview-box">
+          <p class="preview-label">Anteprima Locandina:</p>
+          <div class="preview-card">
+            <div class="preview-title">{{ formValues().title }}</div>
+            <div class="preview-details">
+              @if (formValues().eventDate) { <span>🗓 {{ formValues().eventDate | date:'dd/MM/yyyy HH:mm' }}</span> }
+              @if (formValues().location) { <span>📍 {{ formValues().location }}</span> }
+              @if (formValues().maxSeats) { <span>💺 {{ formValues().maxSeats }} posti</span> }
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="form-actions mt-2">
+        <a routerLink="/events" class="btn btn-outline">Annulla</a>
+        <button type="submit" class="btn btn-primary" [disabled]="loading.isLoading()">
+          {{ loading.isLoading() ? 'Salvataggio...' : (isEdit() ? 'Aggiorna Evento' : 'Pubblica Evento 🚀') }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

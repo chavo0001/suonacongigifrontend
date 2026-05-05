@@ -1,0 +1,1100 @@
+/* ==========================================================================
+   1. TAVOLOZZA COLORI E VARIABILI (Il DNA dell'App)
+   ========================================================================== */
+:root {
+  /* Colori Brand */
+  --primary:        #028090;
+  --primary-dark:   #005f6b;
+  --secondary:      #00BFB2;
+  --bg-app:         #F4F8F8;
+  --surface:        #ffffff;
+
+  /* Testo */
+  --text-main:      #333333;
+  --text-muted:     #666666;
+  --text-light:     #8EA8B4;
+  --text-error:     #e74c3c;
+
+  /* Feedback */
+  --success:        #2D6A4F;
+  --success-bg:     #D8F3DC;
+  --error:          #A4161A;
+  --error-bg:       #FAD2E1;
+  --warning:        #F4A261;
+  --disabled:       #D1D5DB;
+  --disabled-text:  #9CA3AF;
+
+  /* Struttura */
+  --radius:         8px;
+  --radius-lg:      12px;
+  --shadow:         0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg:      0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  --border:         #D0E8E8;
+
+  /* Navbar Dark Theme */
+  --navbar-bg:      #1B2A4A;
+  --navbar-text:    #BDD8E0;
+  --navbar-accent:  #02C39A;
+  --navbar-admin:   #F4A261;
+}
+
+/* ==========================================================================
+   2. RESET E BASE (Pulizia Iniziale)
+   ========================================================================== */
+*, *::before, *::after { 
+  box-sizing: border-box; 
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg-app);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+h1, h2, h3 { line-height: 1.3; color: var(--primary); margin-top: 0; }
+
+a { 
+  color: var(--primary); 
+  text-decoration: none;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+a:hover { opacity: 0.8; }
+
+img { max-width: 100%; height: auto; }
+
+/* ==========================================================================
+   3. LAYOUT E CONTENITORI (Lo Scheletro)
+   ========================================================================== */
+.container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  width: 100%;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+/* Drawers */
+.drawer-backdrop {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+}
+
+.side-drawer {
+  position: fixed;
+  top: 0; right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  overflow-y: auto;  
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  z-index: 1001;
+  transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.side-drawer.open { right: 0; }
+.side-drawer.register-width { max-width: 700px; }
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--bg-app);
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+}
+
+
+/* --- Navbar Dark Style --- */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 60px;
+  background: var(--navbar-bg);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+.logo-icon { font-size: 1.5rem; }
+
+.brand-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--navbar-accent);
+  letter-spacing: .5px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.4rem;
+  align-items: center;
+}
+
+.nav-link {
+  color: var(--navbar-text);
+  text-decoration: none;
+  font-size: .9rem;
+  padding: .25rem 0;
+  border-bottom: 2px solid transparent;
+  transition: all .2s;
+  font-weight: 500;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--navbar-accent);
+  border-bottom-color: var(--navbar-accent);
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.username {
+  font-size: .88rem;
+  color: var(--navbar-text);
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+/* Badge specifici per Navbar */
+.badge-nav {
+  font-size: .7rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+}
+.badge-nav.admin {
+  background: var(--navbar-admin);
+}
+
+/* Bottone logout stile "Outline Light" */
+.btn-logout {
+  background: transparent;
+  border: 1px solid var(--navbar-text);
+  color: var(--navbar-text);
+  padding: .3rem .8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: .82rem;
+  transition: all .2s;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  border-color: #fff;
+}
+
+/* Helper per bottoni piccoli in navbar */
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+}
+
+/* Griglia flessibile per i form */
+.grid-2-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .grid-2-col { grid-template-columns: 1fr; gap: 1rem; }
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+  display: flex;
+  gap: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-muted);
+}
+.breadcrumb .sep { opacity: 0.5; }
+.breadcrumb .current { font-weight: 700; color: var(--text-main); }
+
+/* Thread Header Dark (stile simile alla Navbar) */
+.thread-header-dark {
+  background: var(--navbar-bg);
+  color: white;
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 2rem;
+}
+.thread-header-dark h1 { color: white; margin-bottom: 0.8rem; }
+.thread-meta { display: flex; gap: 1.2rem; align-items: center; opacity: 0.9; font-size: 0.85rem; }
+
+
+/* ==========================================================================
+   4. COMPONENTI UI (Riutilizzabile)
+   ========================================================================== */
+
+/* Bottoni Base */
+button, .btn {
+  padding: 10px 22px;
+  border-radius: var(--radius);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+}
+
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover:not(:disabled) { 
+  background: var(--primary-dark); 
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.btn-outline { 
+  background: transparent; 
+  border: 2px solid var(--primary); 
+  color: var(--primary); 
+}
+
+.btn-danger { background: var(--error); color: white; }
+
+/* Stato Disabilitato Universale */
+button:disabled, .btn:disabled {
+  background-color: var(--disabled) !important;
+  color: var(--disabled-text) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.7;
+}
+
+/* Badge e Label */
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.badge-success { background: var(--success-bg); color: var(--success); }
+.badge-error { background: var(--error-bg); color: var(--error); }
+
+/* --- CHIPS (Tag rimovibili) --- */
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow);
+}
+
+.btn-remove {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.btn-remove:hover { background: rgba(255, 255, 255, 0.4); }
+
+/* --- TAG ITEMS (Selettori multipli) --- */
+.tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-item {
+  padding: 6px 12px;
+  border: 2px solid var(--border);
+  background: white;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.tag-item:hover { border-color: var(--primary); color: var(--primary); }
+
+.tag-item.active {
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+  color: var(--primary-dark);
+  box-shadow: 0 4px 10px rgba(0, 191, 178, 0.2);
+  transform: translateY(-1px);
+}
+
+/* --- PROGRESS BAR (Posti, Skill, ecc.) --- */
+.progress-container { min-width: 120px; }
+.progress-label { font-size: 0.75rem; font-weight: 700; margin-bottom: 4px; }
+
+.progress-track {
+  background: var(--bg-app);
+  border-radius: 10px;
+  height: 6px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: var(--secondary);
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+.progress-bar.bg-error { background: var(--error); }
+
+/* --- EMPTY STATE --- */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  color: var(--text-muted);
+}
+
+.empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+
+/* --- Action Buttons --- */
+.btn-action {
+  /* 1. Definiamo i parametri di default (Preset Base) */
+  --btn-bg: var(--surface);
+  --btn-color: var(--text-main);
+  --btn-border: var(--border);
+  --btn-hover-bg: var(--bg-app);
+  --btn-hover-border: var(--primary);
+  --btn-hover-color: var(--primary);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  line-height: 1;
+  
+  /* Applichiamo i parametri */
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  border: 1.5px solid var(--btn-border);
+  
+  /* Tridimensionalità */
+  box-shadow: 0 2px 0 var(--btn-border);
+}
+
+/* Hover Parametrico: cambia in base ai valori delle variabili nelle sottoclassi */
+.btn-action:hover {
+  background: var(--btn-hover-bg);
+  border-color: var(--btn-hover-border);
+  color: var(--btn-hover-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-action:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+/* --- VARIANTI SPECIFICHE (I preset del mixer) --- */
+
+/* EDIT / UPDATE (Preset Amber/Teal) */
+.btn-edit {
+  --btn-color: #b45309;           /* Testo scuro */
+  --btn-bg: #fffbeb;              /* Sfondo giallino */
+  --btn-border: #f59e0b;          /* Bordo ambra */
+  --btn-hover-bg: #fef3c7;        /* Hover più saturo */
+  --btn-hover-border: #d97706;
+  --btn-hover-color: #92400e;
+}
+
+/* DELETE (Preset Red/Danger) */
+.btn-delete {
+  --btn-color: #b91c1c;           /* Testo rosso scuro */
+  --btn-bg: #fef2f2;              /* Sfondo rosa pallido */
+  --btn-border: #f87171;          /* Bordo rosso */
+  --btn-hover-bg: #fee2e2;        /* Hover rosso più intenso */
+  --btn-hover-border: #ef4444;
+  --btn-hover-color: #991b1b;
+}
+
+/* INFO / VIEW (Preset Blue/Teal) */
+.btn-view {
+  --btn-color: #0369a1;
+  --btn-bg: #f0f9ff;
+  --btn-border: #7dd3fc;
+  --btn-hover-bg: #e0f2fe;
+  --btn-hover-border: #0ea5e9;
+  --btn-hover-color: #075985;
+}
+
+/* Se vogliamo nascondere il testo su mobile ma lasciarlo su desktop */
+.btn-action span {
+  display: inline;
+}
+@media (max-width: 600px) {
+  .btn-action span { display: none; }
+  .btn-action { padding: 0.5rem; }
+}
+
+/* Avatar circolare con gradiente */
+.avatar {
+  width: 45px; height: 45px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: var(--shadow);
+}
+
+/* Post Card */
+.post-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.post-card.is-op { border-left-color: var(--primary); } /* Original Poster highlight */
+
+.post-aside { display: flex; align-items: center; gap: 1rem; }
+.author-info strong { display: block; color: var(--primary); font-size: 1rem; }
+.author-info small { color: var(--text-muted); font-size: 0.75rem; }
+
+/* Personalizzazione scrollbar per Chrome/Safari (Gigi Style) */
+.post-content {
+  max-height: 200px;    /* Altezza massima prima dello scroll */
+  overflow-y: auto;     /* Attiva lo scroll verticale se serve */
+  padding-right: 10px;  /* Spazio per non coprire il testo con la scrollbar */
+  scrollbar-width: thin; /* Scrollbar elegante su Firefox */
+}
+
+.post-content::-webkit-scrollbar {
+  width: 6px;
+}
+.post-content::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+.post-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+.post-content p { 
+  margin: 0; 
+  white-space: pre-wrap; 
+  line-height: 1.6; 
+  word-break: break-word; 
+}
+
+.post-actions { display: flex; justify-content: flex-end; border-top: 1px solid var(--bg-app); padding-top: 0.5rem; }
+
+/* Reply Footer */
+.reply-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+/* --- PILLS (Filtri Categorie) --- */
+.pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pill {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pill:hover { border-color: var(--primary); color: var(--primary); }
+.pill.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+.pill-count {
+  background: rgba(0,0,0,0.1);
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+}
+.pill.active .pill-count { background: rgba(255,255,255,0.2); }
+
+/* --- CONTROLLO TESTI LUNGHI (Il tuo Fix) --- */
+.thread-link {
+  color: var(--primary-dark);
+  font-weight: 700;
+  text-decoration: none;
+  /* Se il titolo è troppo lungo, lo tronca con i puntini (...) */
+  display: block;
+  max-width: 350px; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.thread-link:hover { text-decoration: underline; color: var(--primary); }
+
+/* ==========================================================================
+   5. FORM E INPUT (Inserimento Dati)
+   ========================================================================== */
+.field { margin-bottom: 1.2rem; }
+
+.field label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.field input, 
+.field textarea, 
+.field select {
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--surface);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box; /* Fondamentale per non far uscire gli input dai bordi */
+}
+
+/* --- SPECIFICO INPUT --- */
+.field input {
+  height: 45px; /* Altezza standard per i campi riga singola */
+}
+
+/* --- SPECIFICO TEXTAREA --- */
+.field textarea {
+  min-height: 120px; /* Solo la bio e i post devono essere alti */
+  resize: none;      /* Il fix che abbiamo concordato prima */
+  line-height: 1.5;
+}
+
+/* --- SPECIFICO SEARCH BOX (Miti & Influenze) --- */ 
+.search-box input {
+  border-radius: 50px;  
+  padding-left: 20px;
+  background-color: #fcfcfc;
+}
+
+.field input:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(2, 128, 144, 0.1);
+}
+
+.field input.invalid, .field textarea.invalid {
+  border-color: var(--error);
+  background-color: #fff8f8;
+}
+
+.hint-error {
+  color: var(--error);
+  font-size: 0.8rem;
+  margin-top: 4px;
+  display: block;
+}
+
+/* --- Character Count Dinamico --- */
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--text-muted); /* Grigio standard */
+  margin-top: 4px;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+/* Giallo/Arancio quando si avvicina al limite (es. 90%) */
+.char-count.warning {
+  color: var(--warning);
+}
+
+/* Rosso quando il limite è raggiunto o superato */
+.char-count.limit-reached {
+  color: var(--error);
+  font-weight: 800;
+  animation: shake 0.2s ease-in-out; /* Piccolo "scossone" visivo */
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+/* --- SEARCH BOX CON RISULTATI --- */
+.search-box {
+  position: relative;
+}
+
+.search-results {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0; width: 100%;
+  background: var(--surface);
+  border-radius: var(--radius);
+  z-index: 100;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  padding: 0; margin: 0;
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.search-results li {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.search-results li:hover {
+  background: var(--bg-app);
+  color: var(--primary);
+}
+
+/* ==========================================================================
+   6. LAYOUT SPECIFICI (Auth, Admin, Forum)
+   ========================================================================== */
+
+/* Auth (Login & Register) */
+.auth-wrapper {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+}
+
+.auth-card.register-width {
+  max-width: 750px; /* Più largo per ospitare la griglia strumenti/generi */
+}
+
+.switch-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+
+/* Admin Dashboard & Tabelle */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.kpi-value { 
+  font-size: 2.2rem; 
+  font-weight: 700; 
+  color: var(--primary); 
+  line-height: 1.2;
+}
+.fw-bold { font-weight: 700; }
+.text-error { color: var(--error); }
+
+.table-wrapper {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--primary); color: white; text-align: left; padding: 12px 15px; font-size: 0.85rem; }
+td { padding: 12px 15px; border-bottom: 1px solid var(--bg-app); }
+tr:hover { background-color: #f9fdfd; }
+
+/* Tabelle: stili per i contenuti delle celle */
+.item-title { font-weight: 700; color: var(--primary); }
+.item-subtext { font-size: 0.8rem; color: var(--text-muted); }
+.row-highlight { background-color: #f0fdfa !important; }  
+.action-group { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
+
+/* ==========================================================================
+   7. FEEDBACK GLOBALI (AppComponent)
+   ========================================================================== */
+
+/* Barra Laser */
+.global-loader-bar {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 3px;
+  background: rgba(0, 191, 178, 0.1);
+  z-index: 10000;
+  overflow: hidden;
+}
+
+.progress-glow {
+  height: 100%; background: var(--secondary); width: 40%;
+  position: absolute; animation: slide-loading 1.5s infinite ease-in-out;
+}
+
+/* Scudo Anti-Click */
+.loading-shield {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.02);
+  z-index: 9999;
+  cursor: wait;
+}
+
+/* Toasts */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 11000;
+  min-width: 300px;
+  padding: 1rem;
+  border-radius: var(--radius);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.toast-error { background: var(--error-bg); color: var(--error); border: 1px solid var(--error); }
+.toast-success { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+
+.toast-content { display: flex; align-items: center; gap: 12px; }
+.toast-content p { margin: 0; font-weight: 600; }
+
+.btn-close-toast {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: currentColor;
+}
+
+@keyframes slide-loading {
+  0% { left: -40%; }
+  100% { left: 100%; }
+}
+
+/* ==========================================================================
+   8. UTILITY E SCROLLBAR
+   ========================================================================== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #EAF4F4; }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+.text-center { text-align: center; }
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.mb-1 { margin-bottom: 1rem; }
+.fade-in { animation: fadeIn 0.3s ease-in; }
+
+.w-100 { width: 100%; }
+
+.separator {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+  opacity: 0.5;
+}
+
+/* Padding per le sezioni interne ai form lunghi */
+.section-form {
+  padding: 0.5rem 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ==========================================================================
+   9. HOME & HERO SECTION
+   ========================================================================== */
+
+.hero-wrapper {
+  position: relative;
+  height: calc(100vh - 70px); /* Sottraiamo la navbar se presente */
+  min-height: 600px;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-nav {
+  display: flex;
+  justify-content: space-between; /* Logo a sinistra, Bottone a destra */
+  align-items: center;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+/* Sfondo e Filtri */
+.hero-visual {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%) brightness(0.3) contrast(1.1);
+  animation: heroReveal 2s ease-out;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(2, 128, 144, 0.15) 0%, #000 100%);
+  z-index: 2;
+}
+
+/* Layout Contenuto */
+.hero-content {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.5rem;
+  color: white;
+}
+
+.logo-brand {
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: var(--secondary);
+}
+
+/* Tipografia Hero */
+.hero-main {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: clamp(3rem, 10vw, 7rem);
+  font-weight: 900;
+  line-height: 0.85;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  letter-spacing: -3px;
+  /* Effetto leggero di glitch/ombra */
+  text-shadow: 3px 3px 0 var(--primary-dark);
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  opacity: 0.8;
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  line-height: 1.6;
+}
+
+/* BOTTONE NEON (Ingegnrizzato) */
+.btn-neon {
+  position: relative;
+  padding: 1.5rem 3.5rem;
+  font-size: 1.2rem;
+  font-weight: 900;
+  background: transparent;
+  color: var(--secondary);
+  border: 3px solid var(--secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 191, 178, 0.2);
+}
+
+.btn-neon:hover {
+  background: var(--secondary);
+  color: #000;
+  box-shadow: 0 0 40px var(--secondary);
+  transform: scale(1.05) translateY(-2px);
+}
+
+.btn-flare {
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: 0.6s;
+}
+
+.btn-neon:hover .btn-flare { left: 100%; }
+
+/* --- Il Bottone Testo con il "Vassoio" (Curved Underline) --- */
+.btn-link {
+  background: none;
+  border: none;
+  padding: 0 0 12px 0; /* Spazio in basso per ospitare la curva */
+  color: #fff;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  position: relative; /* Necessario per il vassoio */
+  text-transform: uppercase;
+}
+
+/* Creazione del Vassoio Curvilineo */
+.btn-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -5%;   /* Lo facciamo leggermente più largo del testo */
+  width: 110%; 
+  height: 20px; /* Questa altezza definisce quanto è "profonda" la curva */
+  border-bottom: 2px solid var(--secondary);
+  border-radius: 50%; /* Crea l'effetto arco/vassoio */
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 0.8;
+}
+
+/* Effetto al passaggio del mouse */
+.btn-link:hover {
+  color: var(--secondary);
+}
+
+.btn-link:hover::after {
+  height: 10px; /* La curva si appiattisce leggermente al passaggio */
+  border-bottom-width: 3px;
+  opacity: 1;
+  filter: drop-shadow(0 0 5px var(--secondary)); /* Effetto luce soffusa */
+}
+
+.btn-link span {
+  position: relative;
+  z-index: 2; /* Sopra la linea */
+}
+
+/* Stats */
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 4rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 2rem;
+}
+
+.stat-card {
+  text-align: center;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 0.2rem;
+}
+
+@keyframes heroReveal {
+  from { transform: scale(1.1); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .hero-stats { gap: 1.5rem; flex-direction: column; }
+  .hero-title { letter-spacing: -1px; }
+}

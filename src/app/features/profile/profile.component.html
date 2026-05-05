@@ -1,0 +1,41 @@
+<div class="container fade-in">
+  
+  @if (profile()) {
+    <header class="page-header">
+      <div>
+        <h1>Bentornato nel Backstage, {{ profile()?.username }}!</h1>
+        <p class="text-muted">{{ profile()?.email }}</p>
+      </div>
+    </header>
+
+    <div class="grid-1-col" style="max-width: 850px; margin: 0 auto;">
+      
+      <div class="card">
+        <div class="card-header mb-2">
+          <h3 class="color-primary">🎸 Identità Musicale</h3>
+          <p class="text-muted">
+            Definisci il tuo stile e le tue influenze per farti trovare dagli altri musicisti.
+          </p>
+        </div>
+        
+        <app-musical-profile-form [formGroup]="musicalForm" />
+
+        <div class="form-actions mt-2">
+          <button (click)="saveMusicalProfile()" 
+                  class="btn btn-primary w-100" 
+                  [disabled]="musicalForm.invalid || loading.isLoading()">
+            
+            @if (loading.isLoading()) {
+              <span class="loader-small"></span>
+              <span>Sincronizzazione in corso...</span>
+            } @else {
+              <span>Salva Configurazione Artistica 🚀</span>
+            }
+          </button>
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>

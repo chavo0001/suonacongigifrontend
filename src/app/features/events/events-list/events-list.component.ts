@@ -97,6 +97,7 @@ export class EventsListComponent extends BaseComponent implements OnInit {
       }
     });
   }
+
   // Helper privato per gestire il record dei loading
   private setLocalLoading(id: number, state: boolean) {
     this.actionLoading.update(prev => ({ ...prev, [id]: state }));
