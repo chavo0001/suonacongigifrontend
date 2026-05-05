@@ -1,9 +1,9 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe, SlicePipe } from '@angular/common';
-import { finalize } from 'rxjs'; // Cruciale per spegnere i caricamenti
+import { catchError, finalize, forkJoin, map, of } from 'rxjs';
 import { EventService } from '../../../core/services/event.service';
-import { EventResponse } from '../../../core/models/event.model';
+import { EventLikeResponse, EventResponse } from '../../../core/models/event.model';
 import { BaseComponent } from '../../../shared/base.component';
 
 @Component({
@@ -22,6 +22,7 @@ export class EventsListComponent extends BaseComponent implements OnInit {
   
   // Feedback granulare sui singoli bottoni (evita che cliccando uno si blocchino tutti)
   actionLoading = signal<Record<number, boolean>>({});
+  likeLoading = signal<Record<number, boolean>>({});
 
   ngOnInit(): void {
     this.loadEvents();
@@ -30,13 +31,65 @@ export class EventsListComponent extends BaseComponent implements OnInit {
   loadEvents(): void {
     // La barra laser globale si attiva via Interceptor
     this.eventService.getAll(this.searchTerm().trim()).subscribe({
-      next: data => this.events.set(data ?? [])
+      next: data => {
+        const loadedEvents = data ?? [];
+        this.events.set(loadedEvents);
+        this.loadLikes(loadedEvents);
+      }
     });
   }
 
   onSearchChange(value: string): void {
     this.searchTerm.set(value);
     this.loadEvents();
+  }
+
+  private loadLikes(events: EventResponse[]): void {
+    if (!events.length) {
+      return;
+    }
+
+    const requests = events.map(event =>
+      this.eventService.getLikes(event.id).pipe(
+        catchError(() => of<EventLikeResponse>({
+          eventId: event.id,
+          likeCount: event.likeCount ?? 0,
+          likedByCurrentUser: event.likedByCurrentUser ?? false
+        }))
+      )
+    );
+
+    forkJoin(requests).pipe(
+      map(likes => new Map(likes.map(like => [like.eventId, like])))
+    ).subscribe({
+      next: likesByEventId => {
+        this.events.update(currentEvents => currentEvents.map(event => {
+          const like = likesByEventId.get(event.id);
+          return like ? { ...event, ...like } : event;
+        }));
+      }
+    });
+  }
+
+  toggleLike(event: EventResponse): void {
+    const isLiking = !event.likedByCurrentUser;
+    this.setLikeLoading(event.id, true);
+
+    const request$ = isLiking
+      ? this.eventService.like(event.id)
+      : this.eventService.unlike(event.id);
+
+    request$.pipe(
+      finalize(() => this.setLikeLoading(event.id, false))
+    ).subscribe({
+      next: like => this.applyLike(like)
+    });
+  }
+
+  private applyLike(like: EventLikeResponse): void {
+    this.events.update(currentEvents => currentEvents.map(event =>
+      event.id === like.eventId ? { ...event, ...like } : event
+    ));
   }
 
   /**
@@ -101,5 +154,9 @@ export class EventsListComponent extends BaseComponent implements OnInit {
   // Helper privato per gestire il record dei loading
   private setLocalLoading(id: number, state: boolean) {
     this.actionLoading.update(prev => ({ ...prev, [id]: state }));
+  }
+
+  private setLikeLoading(id: number, state: boolean) {
+    this.likeLoading.update(prev => ({ ...prev, [id]: state }));
   }
 }

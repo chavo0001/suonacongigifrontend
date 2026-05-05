@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseService } from './base.service';  
-import { EventRequest, EventResponse } from '../models/event.model';
+import { EventLikeResponse, EventRequest, EventResponse } from '../models/event.model';
 
 @Injectable({ providedIn: 'root' })
 export class EventService extends BaseService {
@@ -43,5 +43,17 @@ export class EventService extends BaseService {
 
   unregister(id: number): Observable<void> {
     return this.doDelete<void>(`${id}/register`);
+  }
+
+  getLikes(id: number): Observable<EventLikeResponse> {
+    return this.doGet<EventLikeResponse>(`${id}/likes`);
+  }
+
+  like(id: number): Observable<EventLikeResponse> {
+    return this.doPost<EventLikeResponse>(`${id}/likes`, {});
+  }
+
+  unlike(id: number): Observable<EventLikeResponse> {
+    return this.doDelete<EventLikeResponse>(`${id}/likes`);
   }
 }

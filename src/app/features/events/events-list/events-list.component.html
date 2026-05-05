@@ -72,6 +72,18 @@
 
               <td class="text-right">
                 <div class="action-group">
+                  <button
+                    type="button"
+                    class="like-button"
+                    [class.liked]="event.likedByCurrentUser"
+                    [disabled]="likeLoading()[event.id]"
+                    (click)="toggleLike(event)"
+                    [attr.aria-label]="event.likedByCurrentUser ? 'Rimuovi like' : 'Aggiungi like'"
+                    [title]="event.likedByCurrentUser ? 'Rimuovi like' : 'Aggiungi like'">
+                    <span class="like-heart">♥</span>
+                    <span class="like-count">{{ event.likeCount ?? 0 }}</span>
+                  </button>
+
                   @if (!auth.isAdmin()) {
                     <button
                       (click)="toggleRegistration(event)"

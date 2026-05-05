@@ -10,6 +10,8 @@ export interface EventResponse {
   createdBy:                string;
   registeredByCurrentUser:  boolean;
   status: string;
+  likeCount?:               number;
+  likedByCurrentUser?:      boolean;
 }
 
 export interface EventRequest {
@@ -18,4 +20,10 @@ export interface EventRequest {
   eventDate:   string;
   location:    string;
   maxSeats:    number;
+}
+
+export interface EventLikeResponse {
+  eventId:              number;
+  likeCount:            number;
+  likedByCurrentUser:   boolean;
 }
